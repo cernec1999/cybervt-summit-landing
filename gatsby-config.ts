@@ -2,8 +2,8 @@ import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `new`,
-    siteUrl: `https://www.yourdomain.tld`
+    title: `CyberVT Summit 2022`,
+    siteUrl: `https://summit.cybervt.org`
   },
   plugins: ["gatsby-plugin-mdx", {
     resolve: 'gatsby-source-filesystem',
@@ -12,6 +12,12 @@ const config: GatsbyConfig = {
       "path": "./src/pages/"
     },
     __key: "pages"
+  }, {
+    resolve: '@chakra-ui/gatsby-plugin',
+    options: {
+      resetCSS: true,
+      isUsingColorMode: true
+    }
   }]
 };
 

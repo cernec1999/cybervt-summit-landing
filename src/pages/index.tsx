@@ -1,178 +1,213 @@
-import * as React from "react"
+import { ChakraProvider } from '@chakra-ui/provider'
+import '@fontsource/source-code-pro'
+import Typewriter from 'typewriter-effect';
 
-// styles
-const pageStyles = {
-  color: "#232129",
-  padding: 96,
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-const headingAccentStyles = {
-  color: "#663399",
-}
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
-const listStyles = {
-  marginBottom: 96,
-  paddingLeft: 0,
-}
-const listItemStyles = {
-  fontWeight: 300,
-  fontSize: 24,
-  maxWidth: 560,
-  marginBottom: 30,
-}
+import
+{
+  Flex,
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  Button,
+  Heading,
+  Text,
+  useColorModeValue,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  useColorMode,
+  FormHelperText,
+  Grid,
+  GridItem,
+  Center,
+  VStack,
+  Progress
+} from '@chakra-ui/react'
 
-const linkStyle = {
-  color: "#8954A8",
-  fontWeight: "bold",
-  fontSize: 16,
-  verticalAlign: "5%",
-}
+import * as React from 'react'
+import theme from '../theme'
+import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { useEffect, useState } from 'react'
 
-const docLinkStyle = {
-  ...linkStyle,
-  listStyleType: "none",
-  marginBottom: 24,
-}
+const compDT = new Date(0);
+compDT.setUTCSeconds(1651266000);
 
-const descriptionStyle = {
-  color: "#232129",
-  fontSize: 14,
-  marginTop: 10,
-  marginBottom: 0,
-  lineHeight: 1.25,
-}
 
-const docLink = {
-  text: "TypeScript Documentation",
-  url: "https://www.gatsbyjs.com/docs/how-to/custom-configuration/typescript/",
-  color: "#8954A8",
-}
-
-const badgeStyle = {
-  color: "#fff",
-  backgroundColor: "#088413",
-  border: "1px solid #088413",
-  fontSize: 11,
-  fontWeight: "bold",
-  letterSpacing: 1,
-  borderRadius: 4,
-  padding: "4px 6px",
-  display: "inline-block",
-  position: "relative" as "relative",
-  top: -2,
-  marginLeft: 10,
-  lineHeight: 1,
-}
-
-// data
-const links = [
-  {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial/",
-    description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
-    color: "#E95800",
-  },
-  {
-    text: "How to Guides",
-    url: "https://www.gatsbyjs.com/docs/how-to/",
-    description:
-      "Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.",
-    color: "#1099A8",
-  },
-  {
-    text: "Reference Guides",
-    url: "https://www.gatsbyjs.com/docs/reference/",
-    description:
-      "Nitty-gritty technical descriptions of how Gatsby works. Most useful when you need detailed information about Gatsby's APIs.",
-    color: "#BC027F",
-  },
-  {
-    text: "Conceptual Guides",
-    url: "https://www.gatsbyjs.com/docs/conceptual/",
-    description:
-      "Big-picture explanations of higher-level Gatsby concepts. Most useful for building understanding of a particular topic.",
-    color: "#0D96F2",
-  },
-  {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
-    description:
-      "Add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
-    color: "#8EB814",
-  },
-  {
-    text: "Build and Host",
-    url: "https://www.gatsbyjs.com/cloud",
-    badge: true,
-    description:
-      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
-    color: "#663399",
-  },
-]
 
 // markup
 const IndexPage = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
+  const [days, setDays] = useState('00');
+  const [hours, setHours] = useState('00');
+  const [minutes, setMinutes] = useState('00');
+  const [seconds, setSeconds] = useState('00');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      /* Get current Date */
+      const now = new Date();
+
+      /* Get the difference in seconds between now and the countdown date */
+      const diff = Math.floor((compDT.getTime() - now.getTime()) / 1000);
+
+      /* Calculate days, hours, minutes and seconds */
+      const d = Math.floor(diff / (24 * 60 * 60));
+      const h = Math.floor(diff % (24 * 60 * 60) / (60 * 60));
+      const m = Math.floor(diff % (24 * 60 * 60) % (60 * 60) / 60);
+      const s = Math.floor(diff % (24 * 60 * 60) % (60 * 60) % 60);
+
+      /* Turn the results into a string with padding */
+      const dStr = d.toString().padStart(2, '0');
+      const hStr = h.toString().padStart(2, '0');
+      const mStr = m.toString().padStart(2, '0');
+      const sStr = s.toString().padStart(2, '0');
+
+      /* Display the result */
+      setDays(dStr);
+      setHours(hStr);
+
+      setMinutes(mStr);
+      setSeconds(sStr);
+
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <main style={pageStyles}>
-      <title>Home Page</title>
-      <h1 style={headingStyles}>
-        Congratulations
-        <br />
-        <span style={headingAccentStyles}>— you just made a Gatsby site! </span>
-        🎉🎉🎉
-      </h1>
-      <p style={paragraphStyles}>
-        Edit <code style={codeStyles}>src/pages/index.tsx</code> to see this page
-        update in real-time. 😎
-      </p>
-      <ul style={listStyles}>
-        <li style={docLinkStyle}>
-          <a
-            style={linkStyle}
-            href={`${docLink.url}?utm_source=starter&utm_medium=ts-docs&utm_campaign=minimal-starter-ts`}
-          >
-            {docLink.text}
-          </a>
-        </li>
-        {links.map(link => (
-          <li key={link.url} style={{ ...listItemStyles, color: link.color }}>
-            <span>
-              <a
-                style={linkStyle}
-                href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter-ts`}
-              >
-                {link.text}
-              </a>
-              {link.badge && (
-                <span style={badgeStyle} aria-label="New Badge">
-                  NEW!
-                </span>
-              )}
-              <p style={descriptionStyle}>{link.description}</p>
-            </span>
-          </li>
-        ))}
-      </ul>
-      <img
-        alt="Gatsby G Logo"
-        src="data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2a10 10 0 110 20 10 10 0 010-20zm0 2c-3.73 0-6.86 2.55-7.75 6L14 19.75c3.45-.89 6-4.02 6-7.75h-5.25v1.5h3.45a6.37 6.37 0 01-3.89 4.44L6.06 9.69C7 7.31 9.3 5.63 12 5.63c2.13 0 4 1.04 5.18 2.65l1.23-1.06A7.959 7.959 0 0012 4zm-8 8a8 8 0 008 8c.04 0 .09 0-8-8z' fill='%23639'/%3E%3C/svg%3E"
-      />
-    </main>
+    <ChakraProvider theme={theme}>
+      {/* Dark mode machine broke
+      <Box textAlign="right" p={4} m={4} position='fixed' right='0'>
+        <IconButton
+          icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          onClick={toggleColorMode}
+          variant="ghost" aria-label={''} />
+      </Box>*/}
+      <Flex
+        minH={'100vh'}
+        align={'center'}
+        justify={'center'}
+        color={useColorModeValue('gray.700', 'gray.100')}
+        bg={useColorModeValue('cybervt.50', 'cybervt.900')}>
+        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12}>
+          <Stack align={'center'}>
+            <Heading fontSize={'4xl'}>CyberVT Summit 2022</Heading>
+            <Text fontSize={'lg'}>
+            <Typewriter
+              onInit={(typewriter) => {
+                typewriter.typeString('Virginia Tech\'s annual CTF competition')
+                .pauseFor(1000 * 60 * 2)
+                .deleteAll()
+                /* Good on you for reading the source code, challenger! */
+                .typeString('Okay, you waited this long. Here\'s a flag for your patience. Submit it during the competition: summitCTF{p01Ntz_b4_Th3_coMp3t1tion_r_t0t4lly_f41r}')
+                .start();
+              }}
+            />
+            </Text>
+          </Stack>
+
+          <Box bg={useColorModeValue('gray.50', 'cybervt.800')} rounded={'lg'} p={4} alignItems='center'>
+            <Grid templateColumns='repeat(4, 1fr)' gap={6} rounded={'lg'}>
+              <GridItem w='100%' h='100%'>
+                <Center>
+                  <VStack>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                      {days}
+                    </Box>
+                    <Box fontSize={'l'}>
+                      Day(s)
+                    </Box>
+                  </VStack>
+                </Center>
+              </GridItem>
+              <GridItem w='100%' h='100%'>
+                <Center>
+                  <VStack>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                      {hours}
+                    </Box>
+                    <Box fontSize={'l'}>
+                      Hour(s)
+                    </Box>
+                  </VStack>
+                </Center>
+              </GridItem>
+              <GridItem w='100%' h='100%'>
+                <Center>
+                  <VStack>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                      {minutes}
+                    </Box>
+                    <Box fontSize={'l'}>
+                      Minute(s)
+                    </Box>
+                  </VStack>
+                </Center>
+              </GridItem>
+              <GridItem w='100%' h='100%'>
+                <Center>
+                  <VStack>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                      {seconds}
+                    </Box>
+                    <Box fontSize={'l'}>
+                      Second(s)
+                    </Box>
+                  </VStack>
+                </Center>
+              </GridItem>
+            </Grid>
+            <Center>
+              <Heading>until launch</Heading>
+            </Center>
+            <Center>
+              <Text>Summit CTF begins {compDT.toLocaleDateString()} at {compDT.toLocaleTimeString()}</Text>
+            </Center>
+          </Box>
+          <Box
+            rounded={'lg'}
+            bg={useColorModeValue('gray.50', 'cybervt.800')}
+            boxShadow={'lg'}
+            p={8}>
+            <Stack spacing={4}>
+              {/* TODO: Fix the light mode form */}
+              <FormControl isRequired>
+                <FormLabel>Email address</FormLabel>
+                <Input variant='outline' id='email' placeholder='hacker1337@vt.edu' type='email' />
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel id='size'>Team size</FormLabel>
+                <NumberInput max={5} min={1} defaultValue={1} isRequired>
+                  <NumberInputField id='size' />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <FormHelperText color={useColorModeValue('gray.500', 'gray.300')}>You can update your team size later</FormHelperText>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Inconspicuous form element</FormLabel>
+                <Input id='password' colorScheme='gray' placeholder='what is this?' type='password' />
+              </FormControl>
+              <Stack spacing={10}>
+                <Button
+                  bg={'blue.400'}
+                  color={'white'}
+                  _hover={{
+                    bg: 'blue.500',
+                  }}>
+                  Remind Me
+                </Button>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
+      </Flex>
+    </ChakraProvider>
   )
 }
 
