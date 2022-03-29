@@ -1,6 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/provider'
 import '@fontsource/source-code-pro'
 import Typewriter from 'typewriter-effect';
+import ReCAPTCHA from "react-google-recaptcha";
 
 import
 {
@@ -25,28 +26,94 @@ import
   GridItem,
   Center,
   VStack,
-  Progress
+  Progress,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
+  AlertStatus
 } from '@chakra-ui/react'
 
 import * as React from 'react'
 import theme from '../theme'
-import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-import { useEffect, useState } from 'react'
 
 const compDT = new Date(0);
 compDT.setUTCSeconds(1651266000);
 
+const serverURL = "https://t8itx51tpi.execute-api.us-east-1.amazonaws.com/subscribe";
 
 
-// markup
 const IndexPage = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  const [days, setDays] = useState('00');
-  const [hours, setHours] = useState('00');
-  const [minutes, setMinutes] = useState('00');
-  const [seconds, setSeconds] = useState('00');
+  const [days, setDays] = React.useState('00');
+  const [hours, setHours] = React.useState('00');
+  const [minutes, setMinutes] = React.useState('00');
+  const [seconds, setSeconds] = React.useState('00');
 
-  useEffect(() => {
+  /* Create variables for the form element values */
+  const [email, setEmail] = React.useState('');
+  const [teamSize, setTeamSize] = React.useState(1);
+  const [secret, setSecret] = React.useState('');
+  const [recaptcha, setRecaptcha] = React.useState('');
+
+  /* Create variable for the form submission */
+
+  /* Create optional variable of type AlertStatus */
+  let undefinedAlertStatus: "info" | "warning" | "success" | "error" | null | undefined = null;
+
+  const [formSubmittedDialog, setFormSubmittedDialog] = React.useState({status: undefinedAlertStatus, message: ''});
+
+  const handleSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
+    /* Check if email is valid */
+    if (!/([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+/.test(email)) {
+      setFormSubmittedDialog({status: 'error', 'message': 'Please enter a valid email address.'});
+      return;
+    }
+
+    if (teamSize < 1 || teamSize > 5) {
+      setFormSubmittedDialog({status: 'error', 'message': 'Please enter a valid team size.'});
+      return;
+    }
+
+    if (recaptcha === '') {
+      setFormSubmittedDialog({status: 'error', 'message': 'Please verify that you are not a robot.'});
+      return;
+    }
+
+    /* Send data to the server and get response */
+    fetch(serverURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        size: teamSize,
+        secret: secret,
+        recaptcha: recaptcha
+      })
+    }).then(response => {
+      if (response.status === 200) {
+        setFormSubmittedDialog({status: 'success', message: 'You have been added to the list! We will notify you when registration is open.'});
+      } else if (response.status === 400) {
+        response.json().then(data => {
+          setFormSubmittedDialog({status: 'error', message: 'Bad request: ' + data.error});
+        });
+      } else {
+        setFormSubmittedDialog({status: 'error', message: 'An internal server error occurred. Please try again later.'});
+      }
+    })
+  }
+
+
+  React.useEffect(() => {
     const interval = setInterval(() => {
       /* Get current Date */
       const now = new Date();
@@ -69,7 +136,6 @@ const IndexPage = () => {
       /* Display the result */
       setDays(dStr);
       setHours(hStr);
-
       setMinutes(mStr);
       setSeconds(sStr);
 
@@ -92,14 +158,14 @@ const IndexPage = () => {
         justify={'center'}
         color={useColorModeValue('gray.700', 'gray.100')}
         bg={useColorModeValue('cybervt.50', 'cybervt.900')}>
-        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12}>
+        <Stack spacing={8} mx={'auto'} maxW={'lg'} minW={'lg'} py={12}>
           <Stack align={'center'}>
             <Heading fontSize={'4xl'}>CyberVT Summit 2022</Heading>
             <Text fontSize={'lg'}>
             <Typewriter
               onInit={(typewriter) => {
                 typewriter.typeString('Virginia Tech\'s annual CTF competition')
-                .pauseFor(1000 * 60 * 2)
+                .pauseFor(1000 * 60 * 3)
                 .deleteAll()
                 /* Good on you for reading the source code, challenger! */
                 .typeString('Okay, you waited this long. Here\'s a flag for your patience. Submit it during the competition: summitCTF{p01Ntz_b4_Th3_coMp3t1tion_r_t0t4lly_f41r}')
@@ -108,6 +174,95 @@ const IndexPage = () => {
             />
             </Text>
           </Stack>
+          <Tabs variant='soft-rounded' colorScheme='cybervt' isFitted>
+            <TabList>
+              <Tab>Subscribe</Tab>
+              <Tab>FAQ</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                {formSubmittedDialog.status && <Stack p={3} >
+                  <Alert status={formSubmittedDialog.status} color={'gray.700'} variant='subtle'>
+                    <AlertIcon />
+                    {formSubmittedDialog.message}
+                  </Alert>
+                </Stack>}
+                <Box
+                  rounded={'lg'}
+                  bg={useColorModeValue('gray.50', 'cybervt.800')}
+                  boxShadow={'lg'}
+                  p={8}>
+                  <Stack spacing={4}>
+                    {/* TODO: Fix the light mode form */}
+                    <FormControl isRequired>
+                      <FormLabel>Email address</FormLabel>
+                      <Input variant='outline' id='email' placeholder='hacker1337@vt.edu' type='email' onChange={(e) => setEmail(e.target.value)} />
+                    </FormControl>
+                    <FormControl isRequired>
+                      <FormLabel id='size'>Team size</FormLabel>
+                      <NumberInput max={5} min={1} defaultValue={1} isRequired>
+                        <NumberInputField id='size' onChange={(e) => setTeamSize(parseInt(e.target.value))} />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <FormHelperText color={useColorModeValue('gray.500', 'gray.300')}>You can update your team size later</FormHelperText>
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>Inconspicuous form element</FormLabel>
+                      <Input id='password' colorScheme='gray' placeholder='what is this?' type='password' onChange={(e) => setSecret(e.target.value)} />
+                    </FormControl>
+                    <Center>
+                      <ReCAPTCHA
+                        theme="dark"
+                        sitekey="6Lc-4x4fAAAAAPvN3w8e1u3bkqOeM06vSQDq48Gp"
+                        onChange={(e) => setRecaptcha(e || '')}
+                      />
+                    </Center>
+                    <Stack spacing={10}>
+                      <Button
+                        onClick={handleSubmit}
+                        bg={'blue.400'}
+                        color={'white'}
+                        _hover={{
+                          bg: 'blue.500',
+                        }}>
+                        Remind Me
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Box>
+              </TabPanel>
+              <TabPanel>
+                <Box borderRadius='lg' borderWidth='1px' p={4} >
+                    <Heading fontSize={'xl'}>When is the competition?</Heading>
+                    <Text mb={8}>Summit CTF begins {compDT.toLocaleDateString()} at {compDT.toLocaleTimeString()} and lasts for 48 hours.</Text>
+
+                    <Heading fontSize={'xl'}>Where is the competition?</Heading>
+                    <Text mb={8}>Summit CTF will be hosted online.</Text>
+
+                    <Heading fontSize={'xl'}>Will there be prizes?</Heading>
+                    <Text mb={8}>Yes! CyberVT will purchase prizes for the top undergraduate performers, and send a limited number of swag bags.</Text>
+
+                    <Heading fontSize={'xl'}>Who can compete?</Heading>
+                    <Text mb={8}>Anyone can compete, but prizes will be reserved for undergraduate university students.</Text>
+
+                    <Heading fontSize={'xl'}>How do I register?</Heading>
+                    <Text mb={8}>We will send an email when the registration opens.</Text>
+
+                    <Heading fontSize={'xl'}>What is the max team size?</Heading>
+                    <Text mb={8}>Teams will be limited to five people. However, multiple teams from the same university can compete.</Text>
+
+                    <Heading fontSize={'xl'}>Do I need to fill out this form to compete?</Heading>
+                    <Text mb={8}>Nope. But we highly recommend that you do so we can get a headcount. As an added benefit, you'll get a nifty reminder email!</Text>
+
+                    <Heading fontSize={'xl'}>Is there a flag hidden on this website?</Heading>
+                    <Text>I'm not sure, is there?</Text>
+                </Box>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
 
           <Box bg={useColorModeValue('gray.50', 'cybervt.800')} rounded={'lg'} p={4} alignItems='center'>
             <Grid templateColumns='repeat(4, 1fr)' gap={6} rounded={'lg'}>
@@ -166,44 +321,6 @@ const IndexPage = () => {
             <Center>
               <Text>Summit CTF begins {compDT.toLocaleDateString()} at {compDT.toLocaleTimeString()}</Text>
             </Center>
-          </Box>
-          <Box
-            rounded={'lg'}
-            bg={useColorModeValue('gray.50', 'cybervt.800')}
-            boxShadow={'lg'}
-            p={8}>
-            <Stack spacing={4}>
-              {/* TODO: Fix the light mode form */}
-              <FormControl isRequired>
-                <FormLabel>Email address</FormLabel>
-                <Input variant='outline' id='email' placeholder='hacker1337@vt.edu' type='email' />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel id='size'>Team size</FormLabel>
-                <NumberInput max={5} min={1} defaultValue={1} isRequired>
-                  <NumberInputField id='size' />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                <FormHelperText color={useColorModeValue('gray.500', 'gray.300')}>You can update your team size later</FormHelperText>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Inconspicuous form element</FormLabel>
-                <Input id='password' colorScheme='gray' placeholder='what is this?' type='password' />
-              </FormControl>
-              <Stack spacing={10}>
-                <Button
-                  bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}>
-                  Remind Me
-                </Button>
-              </Stack>
-            </Stack>
           </Box>
         </Stack>
       </Flex>
