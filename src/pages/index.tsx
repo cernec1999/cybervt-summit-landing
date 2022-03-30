@@ -156,6 +156,7 @@ const IndexPage = () => {
         <meta charSet="utf-8" />
         <title>Summit CTF</title>
         <link rel="canonical" href="https://summitctf.org" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
       <Flex
         minH={'100vh'}
