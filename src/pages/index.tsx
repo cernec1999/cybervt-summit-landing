@@ -37,11 +37,16 @@ import
   AlertIcon,
   AlertTitle,
   CloseButton,
-  AlertStatus
+  AlertStatus,
+  WrapItem,
+  SimpleGrid,
+  useMediaQuery
 } from '@chakra-ui/react'
 
 import * as React from 'react'
 import theme from '../theme'
+
+import { Helmet } from "react-helmet"
 
 const compDT = new Date(0);
 compDT.setUTCSeconds(1651266000);
@@ -143,41 +148,43 @@ const IndexPage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const [mobile] = useMediaQuery('(max-width: 640px)');
+
   return (
     <ChakraProvider theme={theme}>
-      {/* Dark mode machine broke
-      <Box textAlign="right" p={4} m={4} position='fixed' right='0'>
-        <IconButton
-          icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-          onClick={toggleColorMode}
-          variant="ghost" aria-label={''} />
-      </Box>*/}
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Summit CTF</title>
+        <link rel="canonical" href="https://summitctf.org" />
+      </Helmet>
       <Flex
         minH={'100vh'}
         align={'center'}
         justify={'center'}
         color={useColorModeValue('gray.700', 'gray.100')}
         bg={useColorModeValue('cybervt.50', 'cybervt.900')}>
-        <Stack spacing={8} mx={'auto'} maxW={'lg'} minW={'lg'} py={12}>
-          <Stack align={'center'}>
-            <Heading fontSize={'4xl'}>CyberVT Summit 2022</Heading>
-            <Text fontSize={'lg'}>
-            <Typewriter
-              onInit={(typewriter) => {
-                typewriter.typeString('Virginia Tech\'s annual CTF competition')
-                .pauseFor(1000 * 60 * 3)
-                .deleteAll()
-                /* Good on you for reading the source code, challenger! */
-                .typeString('Okay, you waited this long. Here\'s a flag for your patience. Submit it during the competition: summitCTF{p01Ntz_b4_Th3_coMp3t1tion_r_t0t4lly_f41r}')
-                .start();
-              }}
-            />
-            </Text>
+        <Stack spacing={8} mx={'auto'} p={6} minW='xs' maxW='md'>
+          <Stack textAlign={'center'}>
+            <Heading fontSize={'3xl'}>CyberVT Summit 2022</Heading>
+            <WrapItem>
+              <Text fontSize={'lg'} wordBreak='break-word'>
+              <Typewriter
+                onInit={(typewriter) => {
+                  typewriter.typeString('Virginia Tech\'s annual CTF competition')
+                  .pauseFor(1000 * 60 * 3)
+                  .deleteAll()
+                  /* Good on you for reading the source code, challenger! */
+                  .typeString('Okay, you waited this long. Here\'s a flag for your patience. Submit it during the competition: summitCTF{p01Ntz_b4_Th3_coMp3t1tion_r_t0t4lly_f41r}')
+                  .start();
+                }}
+              />
+              </Text>
+            </WrapItem>
           </Stack>
           <Tabs variant='soft-rounded' colorScheme='cybervt' isFitted>
             <TabList>
-              <Tab>Subscribe</Tab>
-              <Tab>FAQ</Tab>
+              <Tab color='gray.100'>Subscribe</Tab>
+              <Tab color='gray.100'>FAQ</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -193,7 +200,6 @@ const IndexPage = () => {
                   boxShadow={'lg'}
                   p={8}>
                   <Stack spacing={4}>
-                    {/* TODO: Fix the light mode form */}
                     <FormControl isRequired>
                       <FormLabel>Email address</FormLabel>
                       <Input variant='outline' id='email' placeholder='hacker1337@vt.edu' type='email' onChange={(e) => setEmail(e.target.value)} />
@@ -218,6 +224,8 @@ const IndexPage = () => {
                         theme="dark"
                         sitekey="6Lc-4x4fAAAAAPvN3w8e1u3bkqOeM06vSQDq48Gp"
                         onChange={(e) => setRecaptcha(e || '')}
+                        /* CAPTCHA seems too big for smaller devices */
+                        size={mobile ? 'compact' : 'normal'}
                       />
                     </Center>
                     <Stack spacing={10}>
@@ -265,11 +273,11 @@ const IndexPage = () => {
           </Tabs>
 
           <Box bg={useColorModeValue('gray.50', 'cybervt.800')} rounded={'lg'} p={4} alignItems='center'>
-            <Grid templateColumns='repeat(4, 1fr)' gap={6} rounded={'lg'}>
+            <SimpleGrid columns={[2, 4, null]} spacing={6} rounded={'lg'}>
               <GridItem w='100%' h='100%'>
                 <Center>
                   <VStack>
-                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'4xl'} p={4}>
                       {days}
                     </Box>
                     <Box fontSize={'l'}>
@@ -281,7 +289,7 @@ const IndexPage = () => {
               <GridItem w='100%' h='100%'>
                 <Center>
                   <VStack>
-                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'4xl'} p={4}>
                       {hours}
                     </Box>
                     <Box fontSize={'l'}>
@@ -293,7 +301,7 @@ const IndexPage = () => {
               <GridItem w='100%' h='100%'>
                 <Center>
                   <VStack>
-                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'4xl'} p={4}>
                       {minutes}
                     </Box>
                     <Box fontSize={'l'}>
@@ -305,7 +313,7 @@ const IndexPage = () => {
               <GridItem w='100%' h='100%'>
                 <Center>
                   <VStack>
-                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'5xl'} p={4}>
+                    <Box bg='blackAlpha.800' rounded='lg' fontSize={'4xl'} p={4}>
                       {seconds}
                     </Box>
                     <Box fontSize={'l'}>
@@ -314,7 +322,7 @@ const IndexPage = () => {
                   </VStack>
                 </Center>
               </GridItem>
-            </Grid>
+            </SimpleGrid>
             <Center>
               <Heading>until launch</Heading>
             </Center>

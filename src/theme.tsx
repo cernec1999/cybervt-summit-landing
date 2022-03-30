@@ -29,7 +29,7 @@ const theme = extendTheme({
     styles: {
         global: (props: any) => ({
             html: {
-                backgroundColor: useColorModeValue('gray.50', 'cybervt.900'),
+                backgroundColor: 'cybervt.900',
             }
         })
     },

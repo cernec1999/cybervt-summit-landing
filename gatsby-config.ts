@@ -5,7 +5,7 @@ const config: GatsbyConfig = {
     title: `CyberVT Summit 2022`,
     siteUrl: `https://summit.cybervt.org`
   },
-  plugins: ["gatsby-plugin-mdx", {
+  plugins: ["gatsby-plugin-mdx", "gatsby-plugin-react-helmet", {
     resolve: 'gatsby-source-filesystem',
     options: {
       "name": "pages",
