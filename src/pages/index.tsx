@@ -49,7 +49,7 @@ import theme from '../theme'
 import { Helmet } from "react-helmet"
 
 const compDT = new Date(0);
-compDT.setUTCSeconds(1651266000);
+compDT.setUTCSeconds(1651352400);
 
 const serverURL = "https://t8itx51tpi.execute-api.us-east-1.amazonaws.com/subscribe";
 
@@ -156,7 +156,6 @@ const IndexPage = () => {
         <meta charSet="utf-8" />
         <title>Summit CTF</title>
         <link rel="canonical" href="https://summitctf.org" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </Helmet>
       <Flex
         minH={'100vh'}
@@ -246,7 +245,7 @@ const IndexPage = () => {
               <TabPanel>
                 <Box borderRadius='lg' borderWidth='1px' p={4} >
                     <Heading fontSize={'xl'}>When is the competition?</Heading>
-                    <Text mb={8}>Summit CTF begins {compDT.toLocaleDateString()} at {compDT.toLocaleTimeString()} and lasts for 48 hours.</Text>
+                    <Text mb={8}>Summit CTF begins {compDT.toLocaleDateString()} at {compDT.toLocaleTimeString()} and lasts for 24 hours.</Text>
 
                     <Heading fontSize={'xl'}>Where is the competition?</Heading>
                     <Text mb={8}>Summit CTF will be hosted online.</Text>
